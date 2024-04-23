@@ -1,34 +1,22 @@
 import streamlit as st
 import pandas as pd
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Load datasets
-train_df = pd.read_csv('training.csv')
-test_df = pd.read_csv('test.csv')
-validation_df = pd.read_csv('validation.csv')
+# Load the model
+model = load_model("modelET.h5")
 
-# Load the tokenizer
+# Load the CSV files
+train_df = pd.read_csv("training.csv")
+test_df = pd.read_csv("test.csv")
+validation_df = pd.read_csv("validation.csv")
+
+# Tokenizer
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(train_df['text'])
 
-# Define maximum sequence length
-maxlen = 100
-
-# Load the model
-model = load_model('modelET.h5')
-
-# Function to preprocess text
-def preprocess_text(text):
-    sequence = tokenizer.texts_to_sequences([text])
-    padded_sequence = pad_sequences(sequence, maxlen=maxlen, padding='post')
-    return padded_sequence
-
-# Define emotion labels
-emotion_labels = {0: 'Anger', 1: 'Fear', 2: 'Joy', 3: 'Sadness', 4: 'Surprise'}
-
-# Main function to run the app
+# Streamlit app
 def main():
     st.title("Emotion Detection from Text")
 
@@ -37,18 +25,24 @@ def main():
 
     # Button to trigger emotion detection
     if st.button("Detect Emotion"):
-        # Preprocess the input text
-        processed_text = preprocess_text(text_input)
-        
-        # Perform inference
-        prediction = model.predict(processed_text)
-        
-        # Convert prediction to emotion label
-        predicted_emotion = emotion_labels[prediction.argmax()]
-        
-        # Display the predicted emotion
-        st.write("Predicted Emotion:", predicted_emotion)
+        # Perform emotion detection
+        emotion = predict_emotion(text_input)
+        st.write("Predicted Emotion:", emotion)
 
-# Run the main function
+# Function to preprocess text and perform emotion detection
+def predict_emotion(text):
+    # Preprocess the input text
+    sequence = tokenizer.texts_to_sequences([text])
+    padded_sequence = pad_sequences(sequence, maxlen=100, padding='post')
+
+    # Perform emotion detection
+    prediction = model.predict(padded_sequence)
+
+    # Convert prediction to emotion label
+    emotion_labels = ['Angry', 'Happy', 'Sad', 'Surprise', 'Neutral']
+    predicted_emotion = emotion_labels[prediction.argmax()]
+    
+    return predicted_emotion
+
 if __name__ == "__main__":
     main()
