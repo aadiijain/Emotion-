@@ -4,6 +4,11 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
+# Load datasets
+train_df = pd.read_csv('/Users/shreya/Desktop/capstone/Emotion_text/training.csv')
+test_df = pd.read_csv('/Users/shreya/Desktop/capstone/Emotion_text/test.csv')
+validation_df = pd.read_csv('/Users/shreya/Desktop/capstone/Emotion_text/validation.csv')
+
 # Load the tokenizer
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(train_df['text'])
