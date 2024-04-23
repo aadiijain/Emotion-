@@ -1,1 +1,2 @@
-tensorflow
+tensorflow==2.15.0
+Keras==2.15.0
